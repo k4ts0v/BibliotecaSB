@@ -43,7 +43,7 @@ public class PrestamoControllerMOCK {
     }
 
     // POST. Hace INSERT en la bbdd.
-    @PostMapping
+    @PostMapping("/prestamo")
     public ResponseEntity<Prestamo> addPrestamo(@RequestBody Prestamo prestamo) {
         if (prestamo != null && ejemplarControllerMOCK.exists(prestamo.getEjemplar()) && usuarioControllerMOCK.exists(prestamo.getUsuario())) {
             Prestamo prestamoSave = prestamosRepository.save(prestamo);
