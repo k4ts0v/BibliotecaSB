@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -25,22 +23,31 @@ public class Ejemplar {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ColumnDefault("'Disponible'")
-    @Lob
-    @Column(name = "estado")
-    @NotBlank
+    @Column(name = "estado", nullable = false)
+    @NotBlank(message = "El estado no puede estar vacío.")
     @Pattern(regexp = "(Disponible|Prestado|Dañado)", message = "El estado solo puede ser 'Disponible', 'Prestado' o 'Dañado'")
-    private String estado;
+    private String estado = "Disponible"; // Default value in Java
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "El libro no puede ser nulo.")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "isbn", nullable = false)
-    @JsonIncludeProperties("isbn")
+    @JsonBackReference // This is the "back" side of the relationship
     private Libro isbn;
 
-    @OneToMany(mappedBy = "ejemplar")
-    @JsonIncludeProperties("id")
+    @OneToMany(mappedBy = "ejemplar", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Prestamo> prestamos = new LinkedHashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ejemplar ejemplar = (Ejemplar) o;
+        return Objects.equals(id, ejemplar.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

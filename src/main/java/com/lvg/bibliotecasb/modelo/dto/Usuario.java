@@ -28,7 +28,7 @@ public class Usuario {
     @Size(max = 100)
     @NotNull
     @Column(name = "nombre", nullable = false, length = 100)
-    @Pattern(regexp = "[A-z0-9]{1,100}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 100 caracteres.")
+    @Pattern(regexp = "[A-z0-9\\s]{1,100}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 100 caracteres.")
     private String nombre;
 
     @Size(max = 100)

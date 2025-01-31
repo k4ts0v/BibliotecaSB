@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -28,20 +27,29 @@ public class Libro {
     @Size(max = 200)
     @NotNull
     @Column(name = "titulo", nullable = false, length = 200)
-    @Pattern(regexp = "[A-z0-9]{1,200}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 200 caracteres.")
+    @Pattern(regexp = "[A-z0-9\\s]{1,200}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 200 caracteres.")
     private String titulo;
 
     @Size(max = 100)
     @NotNull
-    @Pattern(regexp = "[A-z0-9]{1,100}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 100 caracteres.")
+    @Pattern(regexp = "[A-z0-9\\s]{1,100}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 100 caracteres.")
     @Column(name = "autor", nullable = false, length = 100)
     private String autor;
 
-    @OneToMany(mappedBy = "isbn")
-    @JsonIncludeProperties("id")
-    private Set<Ejemplar> ejemplars = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "isbn", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // This is the "managed" side of the relationship
+    private Set<Ejemplar> ejemplares = new LinkedHashSet<>();
 
-    public Libro(String isbn) {
-        setIsbn(isbn);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Libro libro = (Libro) o;
+        return Objects.equals(isbn, libro.isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn);
     }
 }
