@@ -2,150 +2,75 @@ package com.lvg.bibliotecasb.modelo.dto;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @Table(name = "usuario")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Size(max = 15)
+    @Size(max = 9)
     @NotNull
-    @Column(name = "dni", nullable = false, length = 15)
+    @Column(name = "dni", nullable = false, length = 9)
+    @Pattern (regexp = "\\d{8}[A-Z]", message = "El DNI debe tener un formato válido.")
     private String dni;
 
     @Size(max = 100)
     @NotNull
     @Column(name = "nombre", nullable = false, length = 100)
+    @Pattern(regexp = "[A-z0-9]{1,100}", message = "Solo puede contener caracteres alfanuméricos, y como máximo, 100 caracteres.")
     private String nombre;
 
     @Size(max = 100)
     @NotNull
     @Column(name = "email", nullable = false, length = 100)
+    @Pattern(regexp = "([A-Za-z0-9]{1,50}@gmail.com)", message = "El email debe ser de gmail.")
     private String email;
 
     @Size(max = 255)
     @NotNull
     @Column(name = "password", nullable = false)
+    @Pattern(regexp = "[A-z0-9]{4,12}", message = "La contraseña solo puede contener caracteres alfanuméricos y debe tener entre 4 y 12 caracteres.")
     private String password;
 
     @NotNull
     @Lob
     @Column(name = "tipo", nullable = false)
+    @Pattern(regexp = "(normal|administrador)", message = "El tipo de usuario solo puede ser normal o administrador.")
     private String tipo;
 
     @Column(name = "penalizacion_hasta")
     private LocalDate penalizacionHasta;
 
-    public Usuario() {}
+    public void setDni(@Size(min = 9, max = 9) @NotNull String dni) {
+        char[] LETRAS_DNI = { 'T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X',
+                'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E' };
 
-    public Usuario(Integer id) {
-        setId(id);
-    }
+        try {
+            // Extraer la parte numérica y la letra.
+            String parteNumerica = dni.substring(0, dni.length() - 1);
+            char letra = dni.charAt(dni.length() - 1);
 
-    public Usuario(Integer id, String dni, String nombre, String email, String password, String tipo, LocalDate penalizacionHasta) {
-        setId(id);
-        setDni(dni);
-        setNombre(nombre);
-        setEmail(email);
-        setPassword(password);
-        setTipo(tipo);
-        setPenalizacionHasta(penalizacionHasta);
-    }
+            // Convertir la parte numérica a entero.
+            int numero = Integer.parseInt(parteNumerica);
 
-    public Usuario(String dni, String nombre, String email, String password, String tipo, LocalDate penalizacionHasta) {
-        setDni(dni);
-        setNombre(nombre);
-        setEmail(email);
-        setPassword(password);
-        setTipo(tipo);
-        setPenalizacionHasta(penalizacionHasta);
-    }
+            // Calcular la letra correcta según el resto.
+            char letraCorrecta = LETRAS_DNI[numero % 23];
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getDni() {
-        return dni;
-    }
-
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public LocalDate getPenalizacionHasta() {
-        return penalizacionHasta;
-    }
-
-    public void setPenalizacionHasta(LocalDate penalizacionHasta) {
-        this.penalizacionHasta = penalizacionHasta;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario usuario)) return false;
-        return Objects.equals(getId(), usuario.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", dni='" + dni + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", tipo='" + tipo + '\'' +
-                ", penalizacionHasta=" + penalizacionHasta +
-                '}';
+            // Comparar la letra calculada con la letra proporcionada.
+            this.dni = (letraCorrecta == letra) ? dni : null;
+        } catch (NumberFormatException e) {
+            System.out.println("El dni no es válido");
+        }
     }
 }

@@ -68,7 +68,7 @@ public class EjemplarControllerMOCK {
 
     //POST con Form normal, se trabajará con JSONs normalmente...
     @PostMapping(value = "/ejemplarForm", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ejemplar> addEjemplarForm(@RequestParam Integer id,
+    public ResponseEntity<Ejemplar> addEjemplarForm(@Valid @RequestParam Integer id,
                                               @RequestParam String isbn,
                                               @RequestParam String estado){
         Ejemplar ejemplar = new Ejemplar();
@@ -79,7 +79,7 @@ public class EjemplarControllerMOCK {
 
     //POST con Form normal y fichero, se trabajará con JSONs normalmente...
     @PostMapping(value = "/ejemplarFormFichero", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ejemplar> addEjemplarFormFichero(@RequestParam String isbn,
+    public ResponseEntity<Ejemplar> addEjemplarFormFichero(@Valid @RequestParam String isbn,
                                               @RequestParam Integer id,
                                               @RequestParam String estado,
                                                      @RequestParam MultipartFile imagen){
@@ -98,7 +98,7 @@ public class EjemplarControllerMOCK {
     //PUT --> UPDATE
     //falta actualizar ficheros
     @PutMapping("/{id}")
-    public ResponseEntity<Ejemplar> updateEjemplar(@RequestBody Ejemplar ejemplar, @PathVariable Integer id){
+    public ResponseEntity<Ejemplar> updateEjemplar(@Valid @RequestBody Ejemplar ejemplar, @PathVariable Integer id){
         Ejemplar ejemplarPersistido = repositorioEjemplar.save(ejemplar);
         return ResponseEntity.ok().body(ejemplarPersistido);
     }

@@ -53,7 +53,7 @@ public class UsuarioControllerMOCK {
 
     // POST con formulario y ficheros. Permite la entrada de datos desde un fichero o un formulario.
     @PostMapping(value = "/usuarioForm", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Usuario> addUser(@RequestParam Integer id,
+    public ResponseEntity<Usuario> addUser(@Valid @RequestParam Integer id,
                                            @RequestParam String dni,
                                            @RequestParam String nombre,
                                            @RequestParam String email,
@@ -67,7 +67,7 @@ public class UsuarioControllerMOCK {
 
 //    PUT. Hace UPDATE en la bbdd.
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUser(@RequestBody Usuario usuario, @PathVariable Integer id) {
+    public ResponseEntity<Usuario> updateUser(@Valid @RequestBody Usuario usuario, @PathVariable Integer id) {
         Usuario user = this.usuariosRepository.findUsuarioById(id);
         usuariosRepository.save(usuario);
         return ResponseEntity.ok(user);

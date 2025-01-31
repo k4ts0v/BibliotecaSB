@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,16 +34,18 @@ public class LibroControllerMOCK {
     }
 
     //GET --> SELECT *
+    @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<List<Libro>> getLibro(){
-        List<Libro> lista = this.repositorioLibros.findAll();
-        System.out.println(lista);
+        List<Libro> lista = new ArrayList<>(this.repositorioLibros.findAll()); // Copia inmutable
+        //System.out.println(lista);
         return ResponseEntity.ok(lista);
     }
 
     //GET BY ISBN --> SELECT BY ISBN
     @GetMapping("/{isbn}")
-    @Cacheable
+    //@Cacheable
+    @Transactional(readOnly = true)
     public ResponseEntity<Libro> getLibro(@PathVariable String isbn){
             Libro l = repositorioLibros.findLibroByIsbn(isbn);
             return ResponseEntity.ok(l);
@@ -58,7 +61,7 @@ public class LibroControllerMOCK {
 
     //POST con Form normal, se trabajará con JSONs normalmente...
     @PostMapping(value = "/libroForm", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Libro> addLibroForm(@RequestParam String isbn,
+    public ResponseEntity<Libro> addLibroForm(@Valid @RequestParam String isbn,
                                               @RequestParam String titulo,
                                               @RequestParam String autor){
         Libro libro = new Libro();
@@ -71,7 +74,7 @@ public class LibroControllerMOCK {
 
     //POST con Form normal y fichero, se trabajará con JSONs normalmente...
     @PostMapping(value = "/libroFormFichero", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Libro> addLibroFormFichero(@RequestParam String isbn,
+    public ResponseEntity<Libro> addLibroFormFichero(@Valid @RequestParam String isbn,
                                               @RequestParam String titulo,
                                               @RequestParam String autor,
                                                      @RequestParam MultipartFile imagen){
@@ -91,7 +94,7 @@ public class LibroControllerMOCK {
     //PUT --> UPDATE
     //falta actualizar ficheros
     @PutMapping("/{isbn}")
-    public ResponseEntity<Libro> updateLibro(@RequestBody Libro libro, @PathVariable String isbn){
+    public ResponseEntity<Libro> updateLibro(@Valid @RequestBody Libro libro, @PathVariable String isbn){
         Libro libroPersistido = repositorioLibros.save(libro);
         return ResponseEntity.ok().body(libroPersistido);
     }

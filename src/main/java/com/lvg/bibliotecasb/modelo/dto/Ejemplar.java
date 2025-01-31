@@ -2,7 +2,11 @@ package com.lvg.bibliotecasb.modelo.dto;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -13,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "ejemplar")
+@Data
+@NoArgsConstructor
 public class Ejemplar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +28,12 @@ public class Ejemplar {
     @ColumnDefault("'Disponible'")
     @Lob
     @Column(name = "estado")
+    @NotBlank
+    @Pattern(regexp = "(Disponible|Prestado|Dañado)", message = "El estado solo puede ser 'Disponible', 'Prestado' o 'Dañado'")
     private String estado;
 
     @NotNull
+    @NotBlank
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "isbn", nullable = false)
@@ -34,60 +43,4 @@ public class Ejemplar {
     @OneToMany(mappedBy = "ejemplar")
     @JsonIncludeProperties("id")
     private Set<Prestamo> prestamos = new LinkedHashSet<>();
-
-    public Set<Prestamo> getPrestamos() {
-        return prestamos;
-    }
-
-    public void setPrestamos(Set<Prestamo> prestamos) {
-        this.prestamos = prestamos;
-    }
-
-    public Libro getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(Libro isbn) {
-        this.isbn = isbn;
-    }
-
-    public Ejemplar() {}
-
-    public Ejemplar(Integer id) {
-        setId(id);
-    }
-
-    public Ejemplar(Integer id, String isbn, String estado) {
-        setId(id);
-        setIsbn(new Libro(isbn));
-        setEstado(estado);
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Ejemplar ejemplar)) return false;
-        return Objects.equals(getId(), ejemplar.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
-    }
 }

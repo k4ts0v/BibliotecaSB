@@ -3,6 +3,7 @@ package com.lvg.bibliotecasb.controlador;
 import com.lvg.bibliotecasb.modelo.dto.Prestamo;
 import com.lvg.bibliotecasb.modelo.dto.Usuario;
 import com.lvg.bibliotecasb.modelo.repositories.PrestamosRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ public class PrestamoControllerMOCK {
 
     // POST. Hace INSERT en la bbdd.
     @PostMapping("/prestamo")
-    public ResponseEntity<Prestamo> addPrestamo(@RequestBody Prestamo prestamo) {
+    public ResponseEntity<Prestamo> addPrestamo(@Valid  @RequestBody Prestamo prestamo) {
         if (prestamo != null && ejemplarControllerMOCK.exists(prestamo.getEjemplar()) && usuarioControllerMOCK.exists(prestamo.getUsuario())) {
             Prestamo prestamoSave = prestamosRepository.save(prestamo);
             return ResponseEntity.created(null).body(prestamoSave);
@@ -54,7 +55,7 @@ public class PrestamoControllerMOCK {
 
     //    PUT. Hace UPDATE en la bbdd.
     @PutMapping("/{id}")
-    public ResponseEntity<Prestamo> updatePrestamo(@RequestBody Prestamo prestamo) {
+    public ResponseEntity<Prestamo> updatePrestamo(@Valid @RequestBody Prestamo prestamo) {
         if (prestamo != null && ejemplarControllerMOCK.exists(prestamo.getEjemplar()) && usuarioControllerMOCK.exists(prestamo.getUsuario())) {
             Prestamo prestamoSave = prestamosRepository.save(prestamo);
             return ResponseEntity.ok(prestamoSave);
